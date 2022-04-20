@@ -1,0 +1,130 @@
+---
+title: ""
+author: ""
+date: ""
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+    smooth_scroll: false
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(reshape2)
+library(tidyverse)
+library(rtracklayer)
+library(isoband)
+library(sf)
+library(MASS)
+library(lwgeom)
+library(ggrepel)
+library(hexbin)
+library(ggrastr)
+library(viridis)
+library(pals)
+library(patchwork)
+library(highcharter)
+library(dplyr)
+library(GenomicRanges)
+library(reactable)
+library(data.table)
+```
+
+```{r echo = FALSE, warning=FALSE,message=FALSE,out.width='100%'}
+setwd("~/Documents/TKO_QKO")
+wd <- paste0("~/Documents/TKO_QKO")
+```
+
+# TKO v QKO
+
+```{r echo = FALSE, warning=FALSE,message=FALSE,out.width='100%'}
+lfc <- fread("data/mat.csv/10T.TKO_NSD3_UNEDIT.QKO.K36me2.mat.csv")
+smoothScatter(y = lfc$V1,x=lfc$V2,xlab = "TKO_NSD3_UNEDIT",ylab="QKO")
+```
+
+# TKO top 1 % of bins 
+
+<b> 2423 bins out of 242249 </b>
+
+```{r include=FALSE}
+tko <- import.bw("data/norm.bw/10T.TKO_1.H3K36me2.10kb.norm.bw")
+tko.top1 <- tko[tko$score > (quantile(tko$score,c(0.99)))]
+# The nth percentile of an observation variable is the value that cuts off the first n percent of the data values when it is sorted in ascending order.
+cell_line="10T"
+control="TKO"
+test="TOP1"
+mark="K36me2"
+```
+
+## Annotations
+
+Q-value (FDR) error for cCRE (genome-wide, genic, or igr) - will need to investigate further
+
+### Ensembl regulatory build {.tabset .tabset-pills}
+
+#### Genome-wide
+```{r,echo=FALSE,message=FALSE,warning=FALSE,fig.show="hold", out.width="50%",fig.align='center'}
+load(file=sprintf("%s/plots/%s.%s.%s.%s.ensembl.ol.plot.enrich.rda",wd,cell_line,control,test,mark))
+p1 <- ensembl.ol.plot.enrich
+load(file=(sprintf('%s/plots/%s.%s.%s.%s.ensembl.ol.plot.dep.rda',wd,cell_line,control,test,mark)))
+p2 <- ensembl.ol.plot.dep
+hw_grid(p1,p2)
+```
+
+#### IGR
+```{r,echo=FALSE,message=FALSE,warning=FALSE,fig.show="hold", out.width="50%",fig.align='center'}
+load(file=sprintf("%s/plots/%s.%s.%s.%s.ensembl.ol.plot.enrich.igr.rda",wd,cell_line,control,test,mark))
+p1 <- ensembl.ol.plot.enrich
+load(file=(sprintf('%s/plots/%s.%s.%s.%s.ensembl.ol.plot.dep.igr.rda',wd,cell_line,control,test,mark)))
+p2 <- ensembl.ol.plot.dep
+hw_grid(p1,p2)
+```
+
+#### Genic
+```{r,echo=FALSE,message=FALSE,warning=FALSE,fig.show="hold", out.width="50%",fig.align='center'}
+load(file=sprintf("%s/plots/%s.%s.%s.%s.ensembl.ol.plot.enrich.g.rda",wd,cell_line,control,test,mark))
+p1 <- ensembl.ol.plot.enrich
+load(file=(sprintf('%s/plots/%s.%s.%s.%s.ensembl.ol.plot.dep.g.rda',wd,cell_line,control,test,mark)))
+p2 <- ensembl.ol.plot.dep
+hw_grid(p1,p2)
+```
+
+### RepeatMasker {.tabset .tabset-pills}
+
+#### Genome-wide
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,fig.show="hold", out.width="50%",fig.align='center'}
+load(file=sprintf("%s/plots/%s.%s.%s.%s.repeat.ol.plot.enrich.rda",wd,cell_line,control,test,mark))
+p1 <- repeat.ol.plot.enrich
+load(file=(sprintf('%s/plots/%s.%s.%s.%s.repeat.ol.plot.dep.rda',wd,cell_line,control,test,mark)))
+p2 <- repeat.ol.plot.dep
+hw_grid(p1,p2)
+```
+
+#### IGR
+```{r,echo=FALSE,message=FALSE,warning=FALSE,fig.show="hold", out.width="50%",fig.align='center'}
+load(file=sprintf("%s/plots/%s.%s.%s.%s.repeat.ol.plot.enrich.igr.rda",wd,cell_line,control,test,mark))
+p1 <- repeat.ol.plot.enrich
+load(file=(sprintf('%s/plots/%s.%s.%s.%s.repeat.ol.plot.dep.igr.rda',wd,cell_line,control,test,mark)))
+p2 <- repeat.ol.plot.dep
+hw_grid(p1,p2)
+```
+
+#### Genic 
+```{r,echo=FALSE,message=FALSE,warning=FALSE,fig.show="hold", out.width="50%",fig.align='center'}
+load(file=sprintf("%s/plots/%s.%s.%s.%s.repeat.ol.plot.enrich.g.rda",wd,cell_line,control,test,mark))
+p1 <- repeat.ol.plot.enrich
+load(file=(sprintf('%s/plots/%s.%s.%s.%s.repeat.ol.plot.dep.g.rda',wd,cell_line,control,test,mark)))
+p2 <- repeat.ol.plot.dep
+hw_grid(p1,p2)
+```
+
+
+
+

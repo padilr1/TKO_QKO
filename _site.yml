@@ -1,0 +1,7 @@
+name: ""
+navbar:
+  title: "K36me2 in TKO/QKO"
+  left:
+    - text: "TKO & QKO"
+      href: index.html
+output_dir: "docs"
